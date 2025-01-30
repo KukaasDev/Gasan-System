@@ -42,32 +42,12 @@ const BlotterReportPage = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen">
-            {/* Fixed header */}
-            <div className="bg-gray-100 p-8 flex-shrink-0">
-                <h1 className="text-2xl font-bold">File a Blotter Report</h1>
-            </div>
-            {/* Scrollable form container with custom scrollbar and bottom padding */}
-            <div className="flex-1 overflow-hidden px-8">
-                <div
-                    className="max-w-4xl mx-auto h-full pr-4 overflow-y-auto
-                    [&::-webkit-scrollbar]:w-2
-                    [&::-webkit-scrollbar-track]:bg-transparent
-                    [&::-webkit-scrollbar-thumb]:bg-gray-300
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                    [&::-webkit-scrollbar-thumb]:border-2
-                    [&::-webkit-scrollbar-thumb]:border-transparent
-                    hover:[&::-webkit-scrollbar-thumb]:bg-gray-400
-                    dark:[&::-webkit-scrollbar-thumb]:bg-gray-600
-                    dark:hover:[&::-webkit-scrollbar-thumb]:bg-gray-500"
-                >
-                    {/* increase this to make it scroll all the way  to the button  */}
-                    <div className="pb-24">
-                        {" "}
-                        {/* Added padding wrapper */}
-                        <BlotterReportForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
-                    </div>
-                </div>
+        <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto py-8">
+                <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
+                    File a Blotter Report
+                </h1>
+                <BlotterReportForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
             </div>
         </div>
     );
