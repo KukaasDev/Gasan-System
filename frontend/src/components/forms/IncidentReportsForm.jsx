@@ -1,11 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { incidentReportSchema } from "./validationSchemas";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
     Select,
     SelectContent,
@@ -14,9 +12,15 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { cn, getUserFromLocalStorage } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { getUserFromLocalStorage } from "@/lib/utils";
+import { incidentReportSchema } from "./validationSchemas";
 
 const incidentCategories = {
     "Crime-Related Incidents": [
@@ -49,6 +53,7 @@ export default function IncidentReportForm() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [user, setUser] = useState(() => getUserFromLocalStorage());
+    const [isChrome, setIsChrome] = useState(false);
 
     // Update user when localStorage changes
     useEffect(() => {
@@ -62,12 +67,46 @@ export default function IncidentReportForm() {
         };
     }, []);
 
+    // Improved browser detection for Brave
+    useEffect(() => {
+        const detectBrowser = async () => {
+            // Check if the browser is Brave using the navigator.brave API
+            const isBrave = await new Promise((resolve) => {
+                // Brave's promise-based detection
+                const promise = navigator?.brave?.isBrave?.();
+                if (promise) {
+                    promise.then(resolve).catch(() => resolve(false));
+                } else {
+                    resolve(false);
+                }
+            });
+
+            // Only set Chrome if it's not Brave
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isChromeBrowser =
+                userAgent.includes("chrome") &&
+                !userAgent.includes("edg") &&
+                !userAgent.includes("opr") &&
+                !isBrave;
+
+            setIsChrome(isChromeBrowser);
+            console.log("Browser detection:", {
+                userAgent,
+                isChromeBrowser,
+                isBrave,
+            });
+        };
+
+        detectBrowser();
+    }, []);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
         reset,
         setValue,
+        watch,
     } = useForm({
         resolver: zodResolver(incidentReportSchema),
         defaultValues: {
@@ -210,7 +249,48 @@ export default function IncidentReportForm() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="date">Date of Incident</Label>
-                            <Input type="date" id="date" {...register("date")} />
+                            {isChrome ? (
+                                <Input type="date" id="date" {...register("date")} />
+                            ) : (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-full justify-start text-left font-normal",
+                                                !watch("date") && "text-muted-foreground"
+                                            )}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {watch("date") ? (
+                                                format(new Date(watch("date")), "PPP")
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                        className="w-auto p-0"
+                                        align="start"
+                                        side="bottom"
+                                    >
+                                        <Calendar
+                                            mode="single"
+                                            selected={
+                                                watch("date") ? new Date(watch("date")) : undefined
+                                            }
+                                            onSelect={(date) => {
+                                                setValue(
+                                                    "date",
+                                                    date ? format(date, "yyyy-MM-dd") : "",
+                                                    { shouldValidate: true }
+                                                );
+                                            }}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            )}
                             {errors.date && (
                                 <p className="text-red-500 text-sm">{errors.date.message}</p>
                             )}
