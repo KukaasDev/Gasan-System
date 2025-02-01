@@ -1,4 +1,14 @@
-import { Requests } from "@/components/dashboard/Requests.jsx";
+import { cn } from "@/lib/utils";
+import { logout } from "@/redux/user/userSlice";
+import axios from "axios";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { Header } from "./Header";
+import Overview from "./Overview";
+import { UserList } from "./UserList";
+import { toast } from "sonner";
+import { FileText, LayoutDashboard, LogOut, Mail, Settings, Users } from "lucide-react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,21 +28,12 @@ import {
     SidebarMenuItem,
     SidebarProvider,
 } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
+import { Requests } from "@/components/dashboard/Requests.jsx";
 import BlotterReportPage from "@/pages/BlotterReportPage";
 import IncidentReportsPage from "@/pages/IncidentReportsPage";
-import { logout } from "@/redux/user/userSlice";
-import axios from "axios";
-import { FileText, LayoutDashboard, LogOut, Mail, Settings, Users } from "lucide-react";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { Header } from "./Header";
-import Overview from "./Overview";
-import { UserList } from "./UserList";
-import IncidentReportSecretaryPage from "@/pages/incident-report.jsx";
 import { DocumentRequestSecretary } from "./secretary/DocumentRequestSecretary";
+import IncidentReportSecretaryPage from "@/pages/incident-report.jsx";
+import SecretaryResidentsDashboardPage from "@/pages/secretary-residents-dashboard";
 
 const componentMap = {
     overview: Overview,
@@ -43,6 +44,7 @@ const componentMap = {
     blotter: BlotterReportPage,
     incidents: IncidentReportSecretaryPage,
     requestdocs: DocumentRequestSecretary,
+    residents: SecretaryResidentsDashboardPage,
     // settings: Settings,
     // help: Help,
 };
