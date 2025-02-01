@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import BlotterReportPage from "@/pages/BlotterReportPage";
+import IncidentReportSecretaryPage from "@/pages/incident-report.jsx";
 import IncidentReportsPage from "@/pages/IncidentReportsPage";
 import { logout } from "@/redux/user/userSlice";
 import axios from "axios";
@@ -30,9 +31,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Header } from "./Header";
 import Overview from "./Overview";
-import { UserList } from "./UserList";
-import IncidentReportSecretaryPage from "@/pages/incident-report.jsx";
 import { DocumentRequestSecretary } from "./secretary/DocumentRequestSecretary";
+import { UserList } from "./UserList";
 
 const componentMap = {
     overview: Overview,
@@ -131,27 +131,32 @@ function Dashboard({ tab }) {
               ];
 
     return (
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={true}>
             <div className="fixed inset-0 flex bg-gray-100">
-                <Sidebar className="border-r border-green-800 bg-green-700 [&_[data-radix-sidebar-content]]:bg-green-700 [&_[data-radix-sidebar-trigger]]:text-white">
-                    <SidebarHeader className="border-b border-green-800 p-4 bg-green-700">
-                        <span className="text-2xl font-semibold text-white">BMS</span>
+                <Sidebar collapsible="icon" className="border-r border-green-800 bg-green-700">
+                    <SidebarHeader className="border-b border-green-800 p-4 flex items-center justify-between bg-green-700 h-[60px]">
+                        <div className="min-h-[28px] flex items-center">
+                            <span className="text-2xl font-semibold text-white group-data-[collapsible=icon]:opacity-0">
+                                BMS
+                            </span>
+                        </div>
                     </SidebarHeader>
                     <SidebarContent className="bg-green-700 flex flex-col h-full">
                         <SidebarMenu className="bg-green-700 p-2 space-y-2 flex-1">
                             {sidebarItems.map((item) => (
-                                <SidebarMenuItem key={item.href} className="bg-green-700">
+                                <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
                                         asChild
                                         isActive={tab === item.href.split("=")[1]}
+                                        tooltip={item.label}
                                         className={cn(
-                                            "w-full text-white hover:bg-green-600 transition-colors p-2 rounded-lg",
+                                            "text-white hover:bg-green-600 transition-colors rounded-lg p-2",
                                             tab === item.href.split("=")[1] &&
                                                 "bg-green-600 text-white font-semibold"
                                         )}
                                     >
                                         <Link to={item.href} className="flex items-center gap-3">
-                                            <item.icon className="h-4 w-4" />
+                                            <item.icon className="h-4 w-4 flex-shrink-0" />
                                             <span>{item.label}</span>
                                         </Link>
                                     </SidebarMenuButton>
@@ -163,9 +168,12 @@ function Dashboard({ tab }) {
                         <div className="p-2 mt-auto border-t border-green-800">
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                    <SidebarMenuButton className="w-full text-white hover:bg-green-600 transition-colors p-2 rounded-lg">
+                                    <SidebarMenuButton
+                                        tooltip="Logout"
+                                        className="w-full text-white hover:bg-green-600 transition-colors rounded-lg p-2"
+                                    >
                                         <div className="flex items-center gap-3">
-                                            <LogOut className="h-4 w-4" />
+                                            <LogOut className="h-4 w-4 flex-shrink-0" />
                                             <span>Logout</span>
                                         </div>
                                     </SidebarMenuButton>
